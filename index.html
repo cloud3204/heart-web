@@ -62,7 +62,7 @@
     <h1>520快樂!!!</h1>
     <p>請輸入四位數密碼</p>
     <input type="text" id="password" maxlength="4" />
-    <button onclick="checkPassword()">確定密碼</button>
+    <button id="checkBtn">確定密碼</button>
     <div class="error" id="errorMsg"></div>
   </div>
 
@@ -147,6 +147,8 @@ ctx.fillText("❤️520(•͈⌔•͈⑅)", centerX, centerY);
 }
 
 let audioContext, analyser, source, dataArray;
+
+document.getElementById("checkBtn").addEventListener("click", checkPassword);
 
 async function checkPassword() {
   const input = document.getElementById("password").value;
