@@ -157,10 +157,13 @@ function checkPassword() {
 
     const audio = document.getElementById("bgMusic");
     audio.volume = 0.2;
-    audio.play();
 
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    await audioContext.resume();
+    
     // 音樂視覺化設定
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    await audioContext.resume(); 
     analyser = audioContext.createAnalyser();
     source = audioContext.createMediaElementSource(audio);
     source.connect(analyser);
@@ -169,6 +172,8 @@ function checkPassword() {
 
     const bufferLength = analyser.frequencyBinCount;
     dataArray = new Uint8Array(bufferLength);
+
+    audio.play();
 
     drawHeart();
   } else {
