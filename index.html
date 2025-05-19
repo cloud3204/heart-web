@@ -135,9 +135,12 @@ function drawHeart() {
     ctx.fill();
   }
 
-  ctx.font = "24px 微軟正黑體";
-  ctx.fillStyle = "#fff";
-  ctx.fillText("❤️520(•͈⌔•͈⑅)", centerX - 70, centerY);
+const fontSize = 24 * scaleFactor; // 基本大小 * 音量影響
+ctx.font = `${fontSize}px 微軟正黑體`;
+ctx.fillStyle = "#fff";
+ctx.textAlign = "center";
+ctx.fillText("❤️520(•͈⌔•͈⑅)", centerX, centerY);
+
 
   frame++;
   requestAnimationFrame(drawHeart);
