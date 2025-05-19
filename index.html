@@ -102,22 +102,29 @@ function drawHeart() {
   updateCenter();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const pulse = 1 + 0.2 * Math.sin(frame / 20);
+  // 取得音樂平均音量
+  let scaleFactor = 1;
+  if (analyser && dataArray) {
+    analyser.getByteFrequencyData(dataArray);
+    const average = dataArray.reduce((sum, val) => sum + val, 0) / dataArray.length;
+    scaleFactor = 1 + average / 256; // 讓音量影響 scale
+  }
+
+  const baseScale = 11;
+  const pulse = scaleFactor * (1 + 0.2 * Math.sin(frame / 20));
   const points = [];
 
   for (let i = 0; i < 2000; i++) {
     const t = Math.random() * 2 * Math.PI;
-    const [x, y] = heartFunction(t, 11 * pulse);
+    const [x, y] = heartFunction(t, baseScale * pulse);
     points.push({ x, y });
   }
 
   for (const point of points) {
     const dx = point.x - centerX;
     const dy = point.y - centerY;
-
     const x = point.x + (Math.random() - 0.5) * 2;
     const y = point.y + (Math.random() - 0.5) * 2;
-
     const dist = Math.sqrt(dx * dx + dy * dy);
     const alpha = Math.max(0, 1 - dist / 300);
     const hue = (frame + dist / 5) % 360;
@@ -136,28 +143,35 @@ function drawHeart() {
   requestAnimationFrame(drawHeart);
 }
 
+let audioContext, analyser, source, dataArray;
+
 function checkPassword() {
-  const input = document.getElementById("password").value.trim();
+  const input = document.getElementById("password").value;
   const error = document.getElementById("errorMsg");
 
   if (input === "1829") {
     document.getElementById("overlay").style.display = "none";
 
-    const bgMusic = document.getElementById("bgMusic");
-    bgMusic.volume = 0.2;
+    const audio = document.getElementById("bgMusic");
+    audio.volume = 0.2;
+    audio.play();
 
-    bgMusic.play().then(() => {
-      console.log("音樂播放成功");
-    }).catch(err => {
-      console.log("音樂播放被瀏覽器阻擋：", err);
-    });
+    // 音樂視覺化設定
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioContext.createAnalyser();
+    source = audioContext.createMediaElementSource(audio);
+    source.connect(analyser);
+    analyser.connect(audioContext.destination);
+    analyser.fftSize = 64;
+
+    const bufferLength = analyser.frequencyBinCount;
+    dataArray = new Uint8Array(bufferLength);
 
     drawHeart();
   } else {
     error.textContent = "猜錯囉！提示：兩個重要的日子疊在一起 ❤️";
   }
 }
-
   </script>
 </body>
 </html>
