@@ -175,7 +175,12 @@ async function checkPassword() {
     const bufferLength = analyser.frequencyBinCount;
     dataArray = new Uint8Array(bufferLength);
 
-    audio.play();
+    audio.play().then(() => {
+      drawHeart();
+    }).catch((err) => {
+      console.error("Audio play failed:", err);
+      error.textContent = "手機瀏覽器不允許自動播放，請再點一次確定～";
+    });
 
     drawHeart();
   } else {
